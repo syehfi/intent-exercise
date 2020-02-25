@@ -30,6 +30,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText conf_passInput;
     private ImageView avatarImage;
     private Uri imageUri;
+    private Bitmap bitmap;
     private static final String TAG = RegisterActivity.class.getCanonicalName();
     private static final int GALLERY_REQUEST_CODE = 1;
 
@@ -57,7 +58,7 @@ public class RegisterActivity extends AppCompatActivity {
             if(data != null){
                 try{
                     imageUri = data.getData();
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
                     avatarImage.setImageBitmap(bitmap);
                 } catch (IOException e){
                     Toast.makeText(this, "Can't load image", Toast.LENGTH_SHORT).show();
@@ -72,30 +73,31 @@ public class RegisterActivity extends AppCompatActivity {
         String email = emailInput.getText().toString();
         String homepage = homepageInput.getText().toString();
         String about = aboutInput.getText().toString();
-        Uri image = imageUri.normalizeScheme();
+        Uri image = imageUri;
 
         // Validate Pass
 
         String pass = passInput.getText().toString();
         String conf_pass = conf_passInput.getText().toString();
 
-        if (TextUtils.isEmpty(fullnameInput.getText())){
+        if(imageUri == null){
+            Toast.makeText(this, "Silahkan Isi gambar terlebih dahulu", Toast.LENGTH_SHORT).show();
+        }
+
+        if (fullname.isEmpty()){
             fullnameInput.setError("Silahkan diisi terlebih dahulu");
-        } else if (TextUtils.isEmpty(emailInput.getText())){
+        } else if (email.isEmpty()){
             emailInput.setError("Silahkan diisi terlebih dahulu");
-        } else if (TextUtils.isEmpty(passInput.getText())){
+        } else if (pass.isEmpty()){
             passInput.setError("Silahkan diisi terlebih dahulu");
-        } else if(TextUtils.isEmpty(homepageInput.getText())){
+        } else if(homepage.isEmpty()){
             homepageInput.setError("Silahkan diisi terlebih dahulu");
-        } else if(TextUtils.isEmpty(aboutInput.getText())){
+        } else if(about.isEmpty()){
             aboutInput.setError("Silahkan diisi terlebih dahulu");
         } else if (!pass.equals(conf_pass)){
             passInput.setError("Password anda tidak cocok");
             conf_passInput.setError("Password anda tidak cocok");
-        } else if(imageUri == null){
-            Toast.makeText(this, "Gagal", Toast.LENGTH_SHORT).show();
-        }
-        else{
+        } else{
             User user = new User(fullname, email, homepage, about, image);
             Intent intent = new Intent(this, ProfileActivity.class);
             intent.putExtra(USER_KEY, user);
